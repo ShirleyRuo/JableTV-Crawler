@@ -9,15 +9,18 @@ def validation(url : str) -> str:
     使用selenium获取网页源代码并将Cookie同步到config.headers
     '''
     try:
+        from webdriver_manager.chrome import ChromeDriverManager
+        from selenium.webdriver.chrome.service import Service
         from selenium import webdriver
         from selenium.webdriver import ChromeOptions
+        service = Service(ChromeDriverManager().install())
         options = ChromeOptions()
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
         options.add_argument(f'user-agent={config.headers["User-Agent"]}')
         options.add_argument('--incognito')
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(options=options, service=service)
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         driver.get(url=url)
         time.sleep(20)

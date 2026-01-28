@@ -19,6 +19,7 @@ from typing import List, Optional, Callable, Any, Union, Dict, overload
 from .Config.Config import config
 from .utils.Logger import Logger
 from .utils.Counter import Counter
+from .utils.Timer import Timer
 from .utils.Decrypter import Decrypter, is_encrypted
 from .Manager import DownloadInfoManager
 from .utils.DataUnit import DownloadPackage
@@ -619,6 +620,8 @@ class Downloader:
             self,
             package : DownloadPackage,
             ) -> None:
+        _timer = Timer()
+        _timer.start()
         self._init_request_headers()
         dirs = self._init_dir(package)
         package.status = DownloadStatus.DOWNLOADING
@@ -673,6 +676,8 @@ class Downloader:
         self._merge_ts(package=package, list_file_path=dirs['list_file_path'], m3u8_obj=m3u8.loads(decypt_info_dict['m3u8']))
         package.status = DownloadStatus.FINISHED
         self._clear_all_tmp(package=package)
+        _timer.stop()
+        logger.info(f"下载完成,用时:{_timer.cost()}")
     
     async def _redownload(
             self,

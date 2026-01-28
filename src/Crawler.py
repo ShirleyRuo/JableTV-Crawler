@@ -323,11 +323,7 @@ class MissavVideoCrawler(VideoCrawlerBase):
             else:
                 logger.error('未知错误')
                 raise ValueError('未知错误')
-        # if 'videos' in self.url:
         return Page.SINGLE_VIDEO
-        # else:
-        #     logger.error(f'不支持的视频链接: {self.url}')
-        #     raise ValueError(f'不支持的视频链接: {self.url}')
 
     def _validate_src(self):
         return self.src =='missav' and self.src in self.url

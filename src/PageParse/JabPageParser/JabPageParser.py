@@ -49,7 +49,7 @@ class JabPageParser(PageParserBase):
         cover_url = jab_pattern["cover_url"].search(self._html_text).group(1)
         return cover_url
 
-    def _parse_hash_tag(self) -> Tuple[str]:
+    def _parse_hash_tags(self) -> Tuple[str]:
         hashtags = jab_pattern["hash_tags"].search(self._html_text).group(1)
         return tuple(hashtags.split(',')[:-1])
 

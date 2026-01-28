@@ -1,4 +1,7 @@
-from src.Crawler import MissavVideoCrawler
+import sys
+sys.path.append(r'd:\桌面\Video')
 
-crawler = MissavVideoCrawler()
-crawler.download_video_with_id('ipx-536')
+from src.Crawler import MissavVideoCrawler,JabVideoCrawler
+
+crawler = JabVideoCrawler()
+crawler.muti_download(['dass-777','mmks-032'])
