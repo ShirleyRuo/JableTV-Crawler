@@ -52,10 +52,41 @@ def favicon():
 def upload_chunk():
     try:
         file_id = request.form.get('file_id')
-        chunk_index = int(request.form.get('chunk_index'))
-        total_chunks = int(request.form.get('total_chunks'))
-        file_name = secure_filename(request.form.get('file_name'))
-        
+        if not file_id:
+            return jsonify({
+                'status': 'error',
+                'message': '缺少必要参数: file_id'
+                }), 400
+        chunk_index = request.form.get('chunk_index')
+        if not chunk_index:
+            return jsonify({
+                'status': 'error',
+                'message': '缺少必要参数: chunk_index'
+                }), 400
+        if not chunk_index.isdigit():
+            return jsonify({
+                'status': 'error',
+                'message': '参数 chunk_index 必须是整数'
+                }), 400
+        chunk_index = int(chunk_index)
+        total_chunks = request.form.get('total_chunks')
+        if not total_chunks:
+            return jsonify({
+                'status': 'error',
+                'message': '缺少必要参数: total_chunks'
+                }), 400
+        if not total_chunks.isdigit():
+            return jsonify({
+                'status': 'error',
+                'message': '参数 total_chunks 必须是整数'
+                }), 400
+        filename = request.form.get('file_name')
+        if not filename:
+            return jsonify({
+                'status': 'error',
+                'message': '缺少必要参数: file_name'
+                }), 400
+        file_name = secure_filename(filename)
         chunk_file = request.files['chunk']
         
         temp_dir = os.path.join(sender_config.upload_folder, 'temp', file_id)

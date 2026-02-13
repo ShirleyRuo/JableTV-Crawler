@@ -7,7 +7,7 @@ class PageParserBase(ABC):
 
     def __init__(
             self, 
-            html_text : str
+            html_text : str | None
             ) -> None:
         self._html_text = html_text
     
@@ -54,7 +54,7 @@ class PageParserBase(ABC):
     def _parse_time_length(self) -> str:
         raise NotImplementedError
     
-    def _parse_single_video(self) -> Dict:
+    def _parse_single_video(self) -> Dict[str, Any]:
         id, name, actress = self._parse_id_name_actress()
         hls_url = self._parse_hls_url()
         cover_url = self._parse_cover_url()

@@ -8,7 +8,7 @@ class DownloadPackage:
     id : str
     name : str
     actress : str
-    hash_tag : Tuple[str]
+    hash_tags : Tuple[str]
     hls_url : str
     cover_url : str
     src : str = 'Unknown'
@@ -39,7 +39,7 @@ class InfoPackage:
     id : str
     name : str
     actress : str
-    hash_tag : Tuple[str]
+    hash_tags : Tuple[str]
     has_chinese : bool
     release_date : str
     time_length : str

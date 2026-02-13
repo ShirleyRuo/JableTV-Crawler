@@ -1,7 +1,5 @@
-import sys
-sys.path.append(r'd:\桌面\Video')
+from src.Crawler import VideoCrawler
 
-from src.Crawler import MissavVideoCrawler,JabVideoCrawler
-
-crawler = JabVideoCrawler()
-crawler.muti_download(['dass-777','mmks-032'])
+if __name__ == '__main__':
+    video_crawler = VideoCrawler(src='missav')
+    video_crawler.download_video('MUKA-003')

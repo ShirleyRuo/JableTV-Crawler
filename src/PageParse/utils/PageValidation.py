@@ -23,7 +23,7 @@ def validation(url : str) -> str:
         driver = webdriver.Chrome(options=options, service=service)
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         driver.get(url=url)
-        time.sleep(20)
+        time.sleep(10)
         html_text = driver.page_source
         config.cookie = driver.get_cookies()
         driver.quit()

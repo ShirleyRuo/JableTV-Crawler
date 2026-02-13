@@ -37,7 +37,7 @@ class DownloadInfoManager:
                 id=id,
                 name=list_[-1]['name'],
                 actress=list_[-1]['actress'],
-                hash_tag=tuple(list_[-1]['hash_tag']),
+                hash_tags=tuple(list_[-1]['hash_tags']),
                 has_chinese=list_[-1]['has_chinese'],
                 release_date=list_[-1]['release_date'],
                 time_length=list_[-1]['time_length'],
@@ -57,7 +57,7 @@ class DownloadInfoManager:
         package_data = {
             'name' : package.name,
             'actress' : package.actress,
-            'hash_tag' : package.hash_tag,
+            'hash_tags' : package.hash_tags,
             'hls_url' : package.hls_url,
             'cover_url' : package.cover_url,
             'src' : package.src,
@@ -111,7 +111,6 @@ class VideoManager:
             logger.error(f"不存在的封面目录: {cover_dir}")
             raise FileNotFoundError(f"不存在的封面目录: {cover_dir}")
         
-    
     def _dump_downloaded(
             self, 
             package : DownloadPackage,
@@ -132,3 +131,11 @@ class VideoManager:
             from Sender.sender import start_server
         sender_config.upload_folder = os.path.abspath(str(config.download_dir / 'video'))
         start_server()
+
+class CrawlerManager:
+
+    def __init__(self) -> None:
+        pass
+    
+    def _extract_video_info(self) -> None:
+        pass

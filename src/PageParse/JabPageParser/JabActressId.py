@@ -19,7 +19,7 @@ class JabActressId:
     def __init__(
             self, 
             html_text : str,
-            actress_info : List[ActessInfo] = None
+            actress_info : List[ActessInfo] | None = None
             ) -> None:
         self._page_type = _get_page_type(html_text=html_text)
         self.html_text = html_text
@@ -58,6 +58,9 @@ class JabActressId:
 
     def _dump(self) -> None:
         self._parse()
+        if not self.actress_info:
+            logger.error(f"无法解析出演员id.")
+            raise ValueError("无法解析出演员id.")
         if os.path.exists(self._file_path):
             _old_actress_info = self.load()
             id_list = [i.actress_id for i in self.actress_info]

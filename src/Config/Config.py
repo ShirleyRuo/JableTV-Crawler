@@ -54,7 +54,7 @@ class Config:
         self.proxies = {
             'http' : 'http://127.0.0.1:10809',
         }
-        self.cookie = ''
+        self.cookie = list()
 
     def _create_dir(self) -> None:
         self.download_dir.mkdir(parents=True, exist_ok=True)
@@ -79,7 +79,7 @@ class Config:
             self.headers = json.load(f)
 
     def disable_proxies(self) -> None:
-        self.proxies = {'http' : None}
+        self.proxies = None
 
 config = Config(
     download_dir = r'./downloads',

@@ -56,16 +56,22 @@ class MissavPageParser(PageParserBase):
     def _parse_search_result(self):
         pass
 
-    def _parse_video_list(self) -> Tuple[Dict]:
+    def _parse_video_list(self) -> Tuple[Dict] | None:
         pass
     
     def _parse_cover_url(self) -> str:
         if cover_url_match := missav_parttern['cover_url'].search(self._html_text):
             return cover_url_match.group(1)
+        return ''
     
-    def _parse_hash_tags(self) -> Tuple[str]:
-        if hash_tag_match := missav_parttern['hash_tags'].search(self._html_text):
-            return tuple(hash_tag_match.group(1).split(',')[1:-1])
+    def _parse_hash_tags(self) -> Union[Tuple[str, ...], None]:
+        if hash_tags_match := missav_parttern['hash_tags'].search(self._html_text):
+            hash_tags = hash_tags_match.group(1).split(',')
+            if len(hash_tags) > 1:
+                return tuple(hash_tags[1:-1])
+            return tuple(hash_tags[0])
+        else:
+            return None
     
     def _parse_time_length(self) -> str:
         return "Unknown"
@@ -87,9 +93,12 @@ class MissavPageParser(PageParserBase):
         response = requests.get(playlist_url, headers=headers)
         if response.status_code != 200:
             logger.error(f'无法获取播放列表信息，状态码：{response.status_code}')
+            raise ValueError(f'无法获取播放列表信息，状态码：{response.status_code}')
         else:
             playlist_info = response.text
-            return self._parse_video_info(playlist_info)[0][-1]
+            if playlist := self._parse_video_info(playlist_info):
+                return playlist[0][-1]
+            return ''
     
     def _get_page_type(self) -> Page | None:
         return _get_page_type(self._html_text)

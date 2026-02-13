@@ -54,7 +54,7 @@ def _get_page_type(html_text : str) -> Page:
         return Page.SEARCH_RESULT
     if jab_pattern["videos"].search(html_text):
         return Page.VIDEO_LIST
-    if jab_pattern["hls_url"].search(html_text).group(1):
+    if jab_pattern["hls_url"].search(html_text):
         return Page.SINGLE_VIDEO
     if 'just a moment' in html_text.lower():
         return Page.CAPTACHA

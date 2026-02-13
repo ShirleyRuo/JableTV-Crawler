@@ -21,4 +21,5 @@ src/decoder/__pycache__/*
 src/Config/__pycache__/*
 src/Bases/__pycache__/*
 src/Error/__pycache__/*
+src/Crawlers/__pycache__/*
 test.py

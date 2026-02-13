@@ -8,8 +8,8 @@ class Config:
     def __init__(
             self,
             port: int = 5000,
-            username: str = None,
-            password: str = None,
+            username: str | None = None,
+            password: str | None = None,
         ) -> None:
         self.port = port
         self.username = username

@@ -42,8 +42,8 @@ class Downloader:
             packages : Union[DownloadPackage, List[DownloadPackage]],
             *,
             decrypter : Decrypter = Decrypter(DecrptyType.AES),
-            headers : Dict = None,
-            proxies : Dict = None,
+            headers : Dict | None = None,
+            proxies : Dict | None = None,
             use_ffmpeg : bool = True,
             **kwargs : Any
             ) -> None:
@@ -260,7 +260,7 @@ class Downloader:
     def _load_tmp(
         package : DownloadPackage,
         tmp_file_type : Union[str, List[str]],
-    ) -> Union[Dict, None]:
+    ) -> Dict:
         if isinstance(tmp_file_type, str):
             if tmp_file_type == 'm3u8':
                 file_path = config.tmp_m3u8_dir / f'{package.id.lower()}.m3u8'
@@ -270,14 +270,14 @@ class Downloader:
                 file_path = config.tmp_iv_dir / f'{package.id.lower()}.iv'
             else:
                 logger.error("不支持的临时文件类型, 仅支持m3u8, key, iv")
-                return None
+                raise ValueError("不支持的临时文件类型, 仅支持m3u8, key, iv")
             if file_path.exists():
                 if tmp_file_type == 'm3u8' or tmp_file_type == 'iv':
                     with open(file_path, 'r', encoding='utf-8') as f:
                         return {tmp_file_type: f.read()}
                 with open(file_path, 'rb') as f:
                     return {tmp_file_type: f.read()}
-            return None
+            raise FileNotFoundError(f"临时文件{file_path}不存在!")
         elif isinstance(tmp_file_type, list):
             tmp_file_dict = {}
             for tf in tmp_file_type:
@@ -335,8 +335,8 @@ class Downloader:
                 segments : m3u8.SegmentList,
                 base_url : str,
                 tmp_folder_name : str,
-                key_bytes : bytes,
-                iv : str,
+                key_bytes : bytes | None,
+                iv : str | None,
                 ) -> None:
         tmp_ts_dir = config.tmp_ts_dir / tmp_folder_name
         tmp_ts_dir.mkdir(parents=True, exist_ok=True)
@@ -389,18 +389,22 @@ class Downloader:
             segment : m3u8.Segment,
             tmp_ts_dir : Path,
             base_url : str,
-            key_bytes : bytes,
-            iv : str,
+            key_bytes : bytes | None,
+            iv : str | None,
             semaphore : asyncio.Semaphore,
             *,
-            _package : DownloadPackage = None,
+            _package : DownloadPackage | None = None,
             ) -> None:
         async with semaphore:
             for retry_count in range(config.max_retries):
                 ts_url = urljoin(base_url, segment.uri)
                 logger.info(f"下载ts文件: {segment.uri}")
+                if not segment.uri:
+                    logger.warning("ts文件名为空, 跳过下载")
+                    return
                 try:
-                    async with session.get(ts_url, proxy=config.proxies['http']) as ts_response:
+                    proxy = config.proxies['http'] if config.proxies else None
+                    async with session.get(ts_url, proxy=proxy) as ts_response:
                         if ts_response.status == 200:
                             content  = await ts_response.content.read()
                             with open(tmp_ts_dir / segment.uri, "wb") as f:
@@ -636,7 +640,10 @@ class Downloader:
             decypt_info_dict = self._load_tmp(
                 package=package,
                 tmp_file_type=['m3u8', 'key', 'iv']
-            )
+            ) 
+            if not isinstance(decypt_info_dict['key'], bytes) or not isinstance(decypt_info_dict['iv'], str):
+                logger.error("临时文件中的key或iv格式不正确, key应该是bytes类型, iv应该是str类型")
+                raise ValueError("临时文件中的key或iv格式不正确, key应该是bytes类型, iv应该是str类型")
         else:
             decypt_info_dict = self._load_tmp(
                 package=package,
@@ -688,6 +695,7 @@ class Downloader:
             package=package,
             tmp_file_type=['m3u8', 'key', 'iv']
         )
+
         undownload_segments = self._get_undownload_ts(
             package=package,
             m3u8_obj=m3u8.loads(decrpt_info['m3u8']),

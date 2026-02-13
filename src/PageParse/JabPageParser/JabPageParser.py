@@ -17,16 +17,12 @@ class JabPageParser(PageParserBase):
             html_text : Optional[str] = None,
             videos_per_page : int = 24,
             ) -> None:
-        self._html_text = html_text
+        super().__init__(html_text)
         self._videos_per_page = videos_per_page
 
-    def _parse_id_name_actress(self) -> Tuple[str, str, str]:
-        id, name = self._parse_id_name()
-        actress = self._parse_actress()
-        return id, name, actress
-    
-    def _parse_id_name(self) -> Tuple[str, str]:
-        if name_str := jab_pattern["title"].search(self._html_text).group(1):
+    def __parse_id_name(self) -> Tuple[str, str]:
+        if name_str_match := jab_pattern["title"].search(self._html_text):
+            name_str = name_str_match.group(1)
             id = name_str.split()[0]
             name = " ".join(name_str.split()[1:]).split('- Jable.TV')[0].strip()
         else:
@@ -34,24 +30,34 @@ class JabPageParser(PageParserBase):
             name = "Unknown"
         return id, name
     
-    def _parse_actress(self) -> str:
+    def __parse_actress(self) -> str:
         if actresses := jab_pattern["actress_new"].findall(self._html_text):
             actress_list = [actress.strip() for actress in actresses]
             actress = ", ".join(actress_list).rstrip()
             return actress
         else:
             return "Unknown"
+
+    def _parse_id_name_actress(self) -> Tuple[str, str, str]:
+        id, name = self.__parse_id_name()
+        actress = self.__parse_actress()
+        return id, name, actress
     
     def _parse_hls_url(self) -> str:
-        return jab_pattern["hls_url"].search(self._html_text).group(1)
+        if hls_url := jab_pattern["hls_url"].search(self._html_text):
+            return hls_url.group(1)
+        return ''
     
     def _parse_cover_url(self) -> str:
-        cover_url = jab_pattern["cover_url"].search(self._html_text).group(1)
-        return cover_url
+        if cover_url := jab_pattern["cover_url"].search(self._html_text):
+            return cover_url.group(1)
+        return ''
 
-    def _parse_hash_tags(self) -> Tuple[str]:
-        hashtags = jab_pattern["hash_tags"].search(self._html_text).group(1)
-        return tuple(hashtags.split(',')[:-1])
+    def _parse_hash_tags(self) -> Union[Tuple[str], None]:
+        if hashtags := jab_pattern["hash_tags"].search(self._html_text):
+            return tuple(hashtags.group(1).split(',')[:-1])
+        else:
+            return None
 
     def _parse_release_date(self) -> str:
         return "Unknown"
@@ -60,10 +66,11 @@ class JabPageParser(PageParserBase):
         return "Unknown"
 
     def _parse_has_chinese(self) -> bool:
-        chinese_description = jab_pattern["chinese"].search(self._html_text)
-        if "中文" not in chinese_description.group(1):
-            return False
-        return True
+        if chinese_description := jab_pattern["chinese"].search(self._html_text):
+            if "中文" not in chinese_description.group(1):
+                return False
+            return True
+        return False
     
     def _parse_videos_num(self) -> int:
         if videos := jab_pattern["videos"].search(self._html_text):
@@ -73,6 +80,9 @@ class JabPageParser(PageParserBase):
     def _parse_video_list(self) -> List[VideoPackage]:
         videos = []
         prefix = '<span class="label">'
+        if not self._html_text:
+            logger.error("无法解析视频列表,html_text为None.")
+            raise ValueError("无法解析视频列表,html_text为None.")
         video_blocks = self._html_text.split(prefix)[1:]
         for block in video_blocks:
             block = prefix + block
@@ -119,4 +129,7 @@ class JabPageParser(PageParserBase):
             raise ValueError("未知页面类型")
     
     def _get_page_type(self) -> Page | None:
+        if not self._html_text:
+            logger.error("无法解析页面类型,html_text为None.")
+            raise ValueError("无法解析页面类型,html_text为None.")
         return _get_page_type(self._html_text)
