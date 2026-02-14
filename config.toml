@@ -1,0 +1,23 @@
+# 配置文件示例
+# 下载路径
+download_dir = '\path\to\download_dir'
+log_dir = '\path\to\log_dir'
+tmp_dir = '\path\to\tmp_dir'
+assets_dir = '\path\to\assets_dir'
+config_dir = '\path\to\config_dir'
+
+# 下载选项
+max_concurrency = 2
+max_ts_concurrency = 5
+max_retries = 3
+retry_wait_time = 5
+
+[headers]
+User-Agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+
+
+
+# 查看软件设置，若无则删除该字段, 或直接注释掉
+[proxies]
+http = 'http://127.0.0.1:10809'
+https = 'https://127.0.0.1:10809'

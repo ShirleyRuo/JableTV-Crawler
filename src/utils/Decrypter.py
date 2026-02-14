@@ -20,12 +20,18 @@ class Decrypter:
             iv : Optional[str] = None,
             **kwargs : Any
             ) -> bytes:
+        if not file_obj:
+            raise ValueError("文件对象为空")
+        if not key:
+            raise ValueError("密钥为空")
+        if not iv:
+            raise ValueError("IV为空")
         if iv.startswith('0x'):
-            iv = bytes.fromhex(iv[2:])
+            iv_ = bytes.fromhex(iv[2:])
         else:
-            iv = bytes.fromhex(iv)
+            iv_ = bytes.fromhex(iv)
         if self._decrypty_type == DecrptyType.AES:
-            cipher = AES.new(key, AES.MODE_CBC, iv)
+            cipher = AES.new(key, AES.MODE_CBC, iv_)
             decrypted_data = cipher.decrypt(file_obj)
             return decrypted_data
         else:

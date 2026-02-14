@@ -1,4 +1,5 @@
 import json
+import tomllib
 from pathlib import Path
 
 class Config:
@@ -81,6 +82,30 @@ class Config:
     def disable_proxies(self) -> None:
         self.proxies = None
 
+    def load_config(self) -> None:
+        with open('config.toml', 'rb') as f:
+            config_data = tomllib.load(f)
+        if config_data.get('download_dir') and config_data.get('download_dir') != r'\path\to\download_dir':
+            print(config_data['download_dir'])
+            self.download_dir = Path(config_data['download_dir']).absolute().resolve()
+        if config_data.get('tmp_dir') and config_data.get('tmp_dir') != r'\path\to\tmp_dir':
+            self.tmp_dir = Path(config_data['tmp_dir']).absolute().resolve()
+        if config_data.get('log_dir') and config_data.get('log_dir') != r'\path\to\log_dir':
+            self.log_dir = Path(config_data['log_dir']).absolute().resolve()
+        if config_data.get('assets_dir') and config_data.get('assets_dir') != r'\path\to\assets_dir':
+            self.assets_dir = Path(config_data['assets_dir']).absolute().resolve()
+        if config_data.get('config_dir') and config_data.get('config_dir') != r'\path\to\config_dir':
+            self.config_dir = Path(config_data['config_dir']).absolute().resolve()
+        if config_data.get('proxies'):
+            self.proxies = config_data['proxies']
+        else:
+            self.proxies = None
+        self.max_concurrency = config_data.get('max_concurrency', 2)
+        self.max_ts_concurrency = config_data.get('max_ts_concurrency', 5)
+        self.max_retries = config_data.get('max_retries', 3)
+        self.retry_wait_time = config_data.get('retry_wait_time', 5)
+        self.headers.update(config_data.get('headers', {}))
+
 config = Config(
     download_dir = r'./downloads',
     tmp_dir = r'./tmp',
@@ -88,3 +113,4 @@ config = Config(
     assets_dir = r'./assets',
     config_dir = r'./conf',
     )
+config.load_config()

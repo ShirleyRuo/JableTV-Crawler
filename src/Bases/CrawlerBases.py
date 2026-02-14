@@ -213,7 +213,7 @@ class VideoCrawlerBase(ABC):
             logger.error('下载列表为空')
             raise ValueError('下载列表为空')
     
-    def muti_download(
+    def multi_download(
             self, 
             ids : List[str],
             quiet : bool = False,

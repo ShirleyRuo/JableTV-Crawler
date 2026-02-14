@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Tuple
 
 from .EnumType import DownloadStatus
@@ -14,8 +14,8 @@ class DownloadPackage:
     src : str = 'Unknown'
     status : DownloadStatus = DownloadStatus.PENDING
     has_chinese : bool = False
-    release_date : str = None
-    time_length : str = None
+    release_date : str | None = None
+    time_length : str | None = None
 
     def __hash__(self):
         string = f"{self.id}{self.name}{self.actress}{self.hls_url}{self.cover_url}{self.src}"
@@ -29,7 +29,7 @@ class DownloadPackage:
     def __post_init__(self) -> None:
         self.base_url = self.hls_url.rsplit('/', 1)[0] + '/'
     
-    def update(self, hls_url : str = None) -> None:
+    def update(self, hls_url : str | None = None) -> None:
         if hls_url:
             self.hls_url = hls_url
             self.base_url = self.hls_url.rsplit('/', 1)[0] + '/'
