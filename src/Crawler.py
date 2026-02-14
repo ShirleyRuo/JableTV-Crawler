@@ -1,8 +1,8 @@
 import json
 import logging
-from pathlib import Path
 import pkgutil
 import importlib
+from pathlib import Path
 from typing import Dict, List, Optional, Type
 
 from .Config.Config import config
@@ -67,6 +67,12 @@ class VideoCrawler:
             module = importlib.import_module(crawler_path_str)
             crawler_class = getattr(module, crawler_name)
             self._avaliable_crawlers[domain] = crawler_class
+        
+    def clear_log_files(self) -> None:
+        '''
+        清除日志文件
+        '''
+        Logger(config.log_dir).clear_log_files()
 
     def download_video(self, id : str) -> None:
         '''
@@ -94,6 +100,14 @@ class VideoCrawler:
         根据关键字搜索视频
         Args:
             keyword(str): 搜索关键字
+        '''
+        pass
+
+    def search_videos_with_tag(self, tag : str) -> None:
+        '''
+        根据标签搜索视频
+        Args:
+            tag(str): 标签
         '''
         pass
 

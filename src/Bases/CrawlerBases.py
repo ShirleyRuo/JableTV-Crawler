@@ -1,30 +1,20 @@
 import time
-from threading import Thread
 import requests
-from abc import ABC, ABCMeta, abstractmethod
+from threading import Thread
+from abc import ABC, abstractmethod
 from typing import Any, Dict, Union, List
 
 
 from ..utils.EnumType import Page
 from ..utils.Logger import Logger
 from ..Config.Config import config
-from ..Error.Exception import NotFoundError, ForbiddenError
-from ..PageParse.utils.PageValidation import validation
-from ..utils.DataUnit import DownloadPackage
 from ..Downloader import Downloader
+from ..utils.DataUnit import DownloadPackage
+from ..PageParse.utils.PageValidation import validation
+from ..Error.Exception import NotFoundError, ForbiddenError
+
 
 logger = Logger(config.log_dir).get_logger(__name__)
-
-class VideoCrawlerBaseMeta(ABCMeta):
-
-    def __init__(cls, name, bases, attrs):
-        super().__init__(name, bases, attrs)
-        if name != 'VideoCrawlerBase':
-            if not hasattr(cls, '_crawler_registry'):
-                cls._crawler_registry = {}
-            domain_id = getattr(cls, 'domain', name.lower().replace('videocrawler', ''))
-            src = domain_id.split('.')[0]
-            cls._crawler_registry[src] = cls
 
 class VideoCrawlerBase(ABC):
 
@@ -95,10 +85,6 @@ class VideoCrawlerBase(ABC):
             pass
         config.headers.update(headers)
 
-    # @abstractmethod
-    # def _set_proxy(self) -> None:
-    #     raise NotImplementedError
-
     @abstractmethod
     def _parse_page_content(self, html_text : str) -> Any:
         raise NotImplementedError
@@ -134,7 +120,6 @@ class VideoCrawlerBase(ABC):
             Exception: 请求视频页面失败
         '''
         self._get_headers()
-        # self._set_proxy()
         NotFound_count = 0
         for retry_count in range(config.max_retries):
             try:
@@ -184,7 +169,9 @@ class VideoCrawlerBase(ABC):
         downloader = Downloader(package)
         downloader.download()
     
-    def download_video_with_id(self, video_id : str) -> None:
+    def download_video_with_id(self, video_id : str, quiet : bool = False) -> None:
+        if quiet:
+            Logger(config.log_dir).disable_stream_handler('src.Downloader')
         if self.path_to_video:
             self.path = self.path_to_video
         else:
@@ -233,4 +220,7 @@ class VideoCrawlerBase(ABC):
     
     @property
     def src(self) -> str:
-        return self.domain.split('.')[0]
+        if self.domain:
+            return self.domain.split('.')[0]
+        else:
+            raise NotImplementedError('请在子类中定义domain属性')

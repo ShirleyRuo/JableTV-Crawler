@@ -16,6 +16,9 @@
     video_crawler = VideoCrawler(src='jable')
     video_crawler.multi_download(['MUKA-003', 'MUKA-004'])
 
+    4.清理日志文件：
+    video_crawler.clear_log_files()
+
     问题解决方案：
     1.出现ModuleNotFoundError时，若为第三方库，请使用pip install；若为自定义模块尝试使用：
     import sys
@@ -28,4 +31,4 @@
 from src.Crawler import VideoCrawler
 
 video_crawler = VideoCrawler(src='missav')
-video_crawler.download_video('MUKA-003')
+video_crawler.download_video('MIKR-074')

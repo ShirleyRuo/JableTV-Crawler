@@ -20,4 +20,3 @@ User-Agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # 查看软件设置，若无则删除该字段, 或直接注释掉
 [proxies]
 http = 'http://127.0.0.1:10809'
-https = 'https://127.0.0.1:10809'

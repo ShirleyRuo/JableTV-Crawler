@@ -133,7 +133,7 @@ class Downloader:
         downloaded_ts_index = {}
         downloaded_ts_index_list = []
         prefixes = set()
-        undownload_ts = []
+        undownload_ts : List[m3u8.Segment] = []
         tmp_ts_dir = config.tmp_ts_dir / f'{package.id.lower()}'
         if not tmp_ts_dir.exists():
             logger.error(f"临时ts目录{tmp_ts_dir}不存在!")
@@ -166,7 +166,11 @@ class Downloader:
                 raise ValueError(f"下载信息文件中没有{package.id}的信息")
         else:
             logger.warning("下载信息文件不存在!,将按相同前缀处理！")
-            prefix = m3u8_obj.segments[0].uri.split('0.ts')[0]
+            if _prefix := m3u8_obj.segments[0].uri:
+                prefix = _prefix.split('0.ts')[0]
+            else:
+                logger.error("无法获取m3u8文件中的分段前缀!")
+                raise ValueError("无法获取m3u8文件中的分段前缀!")
             logger.warning(f"将使用{prefix}作为分段前缀")
             for file in tmp_ts_dir.iterdir():
                 if file.is_file() and file.name.endswith('.ts'):
@@ -174,6 +178,9 @@ class Downloader:
                         logger.warning(f"文件损坏,文件名:{file.name}")
                         continue
                     ts_index_match = re.search(prefix + r"(\d+).ts", file.name)
+                    if not ts_index_match:
+                        logger.warning(f"文件名不符合规范,文件名:{file.name}")
+                        continue
                     index = int(ts_index_match.group(1))
                     downloaded_ts_index_list.append(index)
         if len(set(downloaded_ts_index_list)) < len(downloaded_ts_index_list):
@@ -185,7 +192,7 @@ class Downloader:
                 if i in downloaded_ts_index_list:
                     continue
                 undownload_ts.append(segment)
-        return undownload_ts
+        return m3u8.SegmentList(undownload_ts)
 
     def _pause_exit_handler(self, signum, frame) -> None:
         logger.info("收到暂停信号,暂停下载...")
@@ -213,7 +220,8 @@ class Downloader:
     
     def _init_request_headers(self) -> None:
         config.headers.update(self._headers)
-        config.proxies.update(self._proxies)
+        if config.proxies:
+            config.proxies.update(self._proxies)
     
     def _init_session(
             self, 

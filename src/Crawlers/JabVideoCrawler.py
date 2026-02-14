@@ -10,13 +10,13 @@ from typing import Dict, List, Any, Tuple, Union
 from ..Config.Config import config
 from ..utils.Logger import Logger
 from ..utils.EnumType import Page
-from ..PageParse.JabPageParser.JabActressId import JabActressId
 from ..utils.DataUnit import VideoPackage
-from ..PageParse.JabPageParser.JabPageParser import JabPageParser
-from ..PageParse.JabPageParser.JabTagMapping import JabTagParser
+from ..Bases.CrawlerBases import VideoCrawlerBase
 from ..PageParse.utils.PageValidation import validation
 from ..Error.Exception import ForbiddenError, NotFoundError
-from ..Bases.CrawlerBases import VideoCrawlerBase
+from ..PageParse.JabPageParser.JabActressId import JabActressId
+from ..PageParse.JabPageParser.JabPageParser import JabPageParser
+from ..PageParse.JabPageParser.JabTagMapping import JabTagParser
 
 logger = Logger(config.log_dir).get_logger(__name__, logging.INFO)
 
@@ -170,6 +170,8 @@ class JabVideoCrawler(VideoCrawlerBase):
                 logger.info(f'搜索失败: 等待 {wait_time} 秒后重试...')
                 time.sleep(wait_time)
                 continue
+        logger.error(f'搜索失败: 超过最大重试次数')
+        raise Exception(f'搜索失败: 超过最大重试次数')
         
     def _search_with_tag(
             self, 
@@ -225,3 +227,5 @@ class JabVideoCrawler(VideoCrawlerBase):
                 logger.info(f'搜索失败: 等待 {wait_time} 秒后重试...')
                 time.sleep(wait_time)
                 continue
+        logger.error(f'搜索失败: 超过最大重试次数')
+        raise Exception(f'搜索失败: 超过最大重试次数')

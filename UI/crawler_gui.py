@@ -567,7 +567,6 @@ class CrawlerGUI(tk.Tk):
         self.log_info(f"已删除 {len(selected_items)} 个任务")
 
 def main():
-    """主函数"""
     app = CrawlerGUI()
     app.mainloop()
 

@@ -44,3 +44,13 @@ class Logger:
                 if type(handler) is logging.StreamHandler:
                     logger.removeHandler(handler)
                     break
+    
+    def clear_log_files(self, file_name : str = 'default') -> None:
+        if file_name == 'default':
+            for log_file in self._log_dir.glob('*.log'):
+                log_file.unlink()
+        else:
+            log_file = self._log_dir / f'{file_name}.log'
+            if log_file.exists():
+                log_file.unlink()
+
