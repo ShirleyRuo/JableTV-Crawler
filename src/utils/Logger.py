@@ -1,7 +1,16 @@
 import sys
 
+import queue
 import logging
 from pathlib import Path
+
+class QueueHandler(logging.Handler):
+    def __init__(self, log_queue : queue.Queue):
+        super().__init__()
+        self.log_queue = log_queue
+
+    def emit(self, record):
+        self.log_queue.put(('log', record))
 
 class Logger:
 
@@ -54,3 +63,11 @@ class Logger:
             if log_file.exists():
                 log_file.unlink()
 
+def set_logger_queue(log_queue : queue.Queue) -> None:
+    for logger in Logger._registry.values():
+        for handler in logger.handlers:
+            if type(handler) is logging.StreamHandler:
+                logger.removeHandler(handler)
+        queue_handler = QueueHandler(log_queue)
+        queue_handler.setLevel(logging.INFO)
+        logger.addHandler(queue_handler)

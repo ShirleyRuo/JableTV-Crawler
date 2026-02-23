@@ -23,3 +23,4 @@ src/Bases/__pycache__/*
 src/Error/__pycache__/*
 src/Crawlers/__pycache__/*
 test.py
+UI/__pycache__/*

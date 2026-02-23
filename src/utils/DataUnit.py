@@ -5,12 +5,12 @@ from .EnumType import DownloadStatus
 
 @dataclass
 class DownloadPackage:
-    id : str
-    name : str
-    actress : str
-    hash_tags : Tuple[str]
-    hls_url : str
-    cover_url : str
+    id : str = ''
+    name : str = ''
+    actress : str = ''
+    hash_tags : Tuple[str] | None  = None
+    hls_url : str = ''
+    cover_url : str = ''
     src : str = 'Unknown'
     status : DownloadStatus = DownloadStatus.PENDING
     has_chinese : bool = False
