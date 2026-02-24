@@ -1,4 +1,4 @@
-from UI.test_gui import VideoCrawlerApp
+from UI.gui import VideoCrawlerApp
 
 if __name__ == '__main__':
     app = VideoCrawlerApp()
