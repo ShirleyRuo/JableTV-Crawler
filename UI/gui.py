@@ -144,7 +144,8 @@ class VideoPage(ttk.Frame):
         self.download_thread.start()
     
     def _download_video(self) -> None:
-        self._add_to_list()
+        if not self.controller._data.download_dict.get(self.download_package.id):
+            self._add_to_list()
         if packages := list(self.controller._data.download_dict.values()):
             downloader = Downloader(packages=packages)
             downloader.download()

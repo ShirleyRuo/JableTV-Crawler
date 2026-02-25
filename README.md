@@ -1,21 +1,19 @@
-# 视频下载工具
+# JableTV视频下载工具
 
 ![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-一个功能强大的视频下载工具，支持从多个视频网站自动下载视频。本项目采用模块化设计，支持TS分片下载、文件解密、自动合并等功能。
+一个功能强大的视频下载工具，支持从多个视频网站自动下载视频，也可单独作为m3u8视频下载器。
 
 ## 功能特性
 
 ### 核心功能
-- ✅ **多视频源支持**：支持Jable.TV和Missav等多个视频网站
+- ✅ **多视频源支持**：支持Jable.TV和Missav视频网站，后续将支持更多视频网站
 - ✅ **智能页面解析**：自动解析视频ID、标题、演员、HLS地址、封面等信息
 - ✅ **TS分片多线程下载**：高效下载视频TS分片，支持断点续传
 - ✅ **文件完整性校验**：基于16位块大小检测，确保文件完整性
-- ✅ **AES解密支持**：自动解密加密的TS视频分片
-- ✅ **自动合并TS文件**：支持原生合并和FFmpeg加速合并两种模式
-- ✅ **智能重试机制**：指数退避算法，提高下载成功率
-- ✅ **重复文件处理**：基于时间戳自动重命名重复文件
+- ✅ **AES解密支持**：支持AES-128-CBC解密
+- ✅ **自动合并TS文件**：使用FFmpeg合并
 
 ### 高级功能
 - 🔄 **断点续传**：支持下载中断后从断点继续下载
@@ -27,13 +25,13 @@
 
 ### 前置要求
 - Python 3.8+
-- FFmpeg（可选，用于加速合并）
+- FFmpeg
 
 ### 安装步骤
 1. 克隆项目到本地：
    ```bash
    git clone <repository-url>
-   cd Video
+   cd JableTv-Crawler
    ```
 
 2. 安装依赖：
@@ -41,7 +39,7 @@
    pip install -r requirements.txt
    ```
 
-3. （可选）安装FFmpeg以加速视频合并：
+3. 安装FFmpeg以支持视频合并：
    ```bash
    # Ubuntu/Debian
    sudo apt install ffmpeg
@@ -71,6 +69,13 @@ video_crawler.download_video('GVH-778')
 ```python
 # 参考 example.py 和 example_sender.py
 ```
+
+### GUI使用
+   ```bash
+   cd JableTv-Crawler
+   conda activate <env-name>
+   python gui.py
+   ```
 
 ## 项目结构
 
@@ -116,15 +121,6 @@ project-root/
 
 ## 配置说明
 
-### 爬虫配置
-编辑 `conf/crawlers_conf.json` 配置支持的视频源：
-```json
-{
-    "jable": "JabVideoCrawler",
-    "missav": "MissavVideoCrawler"
-}
-```
-
 ### HTTP头配置
 编辑 `conf/headers.json` 配置请求头，避免被网站屏蔽：
 ```json
@@ -135,14 +131,6 @@ project-root/
     "Accept-Encoding": "gzip, deflate, br",
     "Connection": "keep-alive"
 }
-```
-
-### 代理配置
-在代码中配置代理服务器：
-```python
-# 在您的脚本中设置代理
-from src.Config.Config import config
-config.proxies = {'http': 'http://127.0.0.1:8080', 'https': 'http://127.0.0.1:8080'}
 ```
 
 ## 注意事项
@@ -167,8 +155,6 @@ config.proxies = {'http': 'http://127.0.0.1:8080', 'https': 'http://127.0.0.1:80
 ### 添加新的视频源
 1. 在 `src/Crawlers/` 目录下创建新的爬虫类，继承 `VideoCrawlerBase`
 2. 在 `src/PageParse/` 目录下创建对应的页面解析器
-3. 在 `conf/crawlers_conf.json` 中添加新的视频源配置
-4. 更新 `src/Crawler.py` 中的爬虫加载逻辑
 
 ### 扩展功能
 1. **新的下载协议**：在 `src/Downloader.py` 中添加支持
